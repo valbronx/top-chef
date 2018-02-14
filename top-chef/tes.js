@@ -6,17 +6,26 @@ var app     = express();
 
 app.get('/scrape', function(req, res){
   // Let's scrape Anchorman 2
-  url = 'https://restaurant.michelin.fr/restaurants/france/restaurants-1-etoile-michelin/restaurants-2-etoiles-michelin/restaurants-3-etoiles-michelin';
+            console.log("dwf1");
 
-  request(url, function(error, response, html){
+  var test=true;
+  urlbase = 'https://restaurant.michelin.fr/restaurants/france/restaurants-1-etoile-michelin/restaurants-2-etoiles-michelin/restaurants-3-etoiles-michelin/page-';
+  i=1;
+  while(i<30){
+  	          console.log("dwf2");
+
+   url=urlbase+i.toString();
+     	          console.log(url);
+
+   request(url, function(error, response, html){
 	  
-
     if(!error){
       var $ = cheerio.load(html);
 		
       var title, release, rating;
-	  var jsons = []
-      
+          console.log("dwf");
+  		var jsons = [];
+
 
       $('[attr-gtm-type="poi"]').each(function(){
 	    var data = $(this);
@@ -26,14 +35,22 @@ app.get('/scrape', function(req, res){
         json.release = release;
 		jsons.push(json)
       })    
+  	  fs.appendFile('output.json', JSON.stringify(jsons, null, 4), function(err){
+    	  console.log('File successfully written! - Check your project directory for the output.json file');
+  	  })
+    }
+    else{
+    	test=false;
     }
 
-    fs.writeFile('output.json', JSON.stringify(jsons, null, 4), function(err){
-      console.log('File successfully written! - Check your project directory for the output.json file');
-    })
+   })
+      i++;
 
-    res.send('Check your console!')
-  })
+  }
+
+
+  res.send('Check your console!')
+
 })
 
 app.listen('8081')
